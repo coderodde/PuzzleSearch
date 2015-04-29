@@ -376,7 +376,7 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
      * 
      * @return the x-coordinate.
      */
-    private final int getEmptySlotX() {
+    public final int getEmptySlotX() {
         return emptyIndex & 0xf;
     }
     
@@ -385,7 +385,7 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
      * 
      * @return the y-coordinate. 
      */
-    private final int getEmptySlotY() {
+    public final int getEmptySlotY() {
         return (emptyIndex & 0xf0) >>> 4;
     }
     

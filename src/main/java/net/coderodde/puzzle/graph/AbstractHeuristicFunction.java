@@ -6,15 +6,21 @@ package net.coderodde.puzzle.graph;
  * @author Rodion Efremov
  * @version 1.6
  */
-public abstract class AbstractHeuristicFunction<T, W> {
+public abstract class AbstractHeuristicFunction<T> {
     
     /**
-     * Get the estimate for the length of the path from <code>source</code> to 
-     * <code>target</code>.
+     * Returns the estimate for the length of the path from <code>source</code> 
+     * to the preset target node.
      * 
      * @param  source the source node.
-     * @param  target the target node.
      * @return the estimate.
      */
-    public abstract W estimate(final T source, final T target);
+    public abstract int estimate(final T source);
+    
+    /**
+     * Sets the target node.
+     * 
+     * @param target the target node.
+     */
+    public abstract void setTarget(final T target);
 }

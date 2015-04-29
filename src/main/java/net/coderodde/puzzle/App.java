@@ -7,6 +7,8 @@ import net.coderodde.puzzle.graph.support.PuzzleGraphNode;
 import net.coderodde.puzzle.graph.finders.AbstractPathFinder;
 import net.coderodde.puzzle.graph.finders.support.BFSFinder;
 import net.coderodde.puzzle.graph.finders.support.BidirectionalBFSFinder;
+import net.coderodde.puzzle.graph.finders.support.HeuristicBFSFinder;
+import net.coderodde.puzzle.graph.finders.support.ManhattanHeuristicFunction;
 
 public class App {
     
@@ -22,8 +24,13 @@ public class App {
         
         final List<List<PuzzleGraphNode>> pathList = new ArrayList<>();
         
-        pathList.add(profile(new BFSFinder(), source, target));
+//        pathList.add(profile(new BFSFinder(), source, target));
+        final ManhattanHeuristicFunction mhf = new ManhattanHeuristicFunction();
+        final AbstractPathFinder<PuzzleGraphNode> hbfs = 
+                new HeuristicBFSFinder(mhf);
+        
         pathList.add(profile(new BidirectionalBFSFinder(), source, target));
+        pathList.add(profile(hbfs, source, target));
         
         final List<PuzzleGraphNode>[] pathListArray = 
                 new List[]{ pathList.get(0), pathList.get(1) };
