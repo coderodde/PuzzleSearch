@@ -62,7 +62,7 @@ extends AbstractHeuristicFunction<PuzzleGraphNode> {
         final int targetX = target.getEmptySlotX();
         final int targetY = target.getEmptySlotY();
         
-        distance -= Math.abs(xArray[0] - targetX) -
+        distance -= Math.abs(xArray[0] - targetX) +
                     Math.abs(yArray[0] - targetY);
         
         return distance;

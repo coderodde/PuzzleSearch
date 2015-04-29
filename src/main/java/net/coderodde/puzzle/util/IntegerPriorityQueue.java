@@ -37,9 +37,28 @@ extends Spawnable<T> {
     public E extractMinimum();
     
     /**
+     * Returns but does not remove the minimum element.
+     * 
+     * @return the minimum element.
+     */
+    public E min();
+    
+    /**
      * Returns <code>true</code> if and only if this heap is empty.
      * 
      * @return <code>true</code> if the heap is empty.
      */
     public boolean isEmpty();
+    
+    /**
+     * Returns the size of this heap.
+     * 
+     * @return the size.
+     */
+    public int size();
+    
+    /**
+     * Clears the entire heap.
+     */
+    public void clear();
 }

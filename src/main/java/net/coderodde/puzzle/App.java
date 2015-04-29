@@ -17,7 +17,7 @@ public class App {
     public static void main(final String... args) {
         final long seed = System.currentTimeMillis();
         final Random rnd = new Random(seed);
-        final PuzzleGraphNode source = getSource(15, rnd);
+        final PuzzleGraphNode source = getSource(30, rnd);
         final PuzzleGraphNode target = new PuzzleGraphNode(3);
         
         System.out.println("Seed: " + seed);

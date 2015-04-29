@@ -185,6 +185,13 @@ public class DaryHeap<E> implements IntegerPriorityQueue<DaryHeap<E>, E> {
         
         return ret;
     }
+    
+    @Override
+    public E min() {
+        checkNotEmpty();
+        
+        return ((Node<E>) storage[0]).element;
+    }
 
     /**
      * {@inheritDoc }
@@ -194,6 +201,19 @@ public class DaryHeap<E> implements IntegerPriorityQueue<DaryHeap<E>, E> {
     @Override
     public boolean isEmpty() {
         return size == 0;
+    }
+    
+    public int size() {
+        return size;
+    }
+    
+    public void clear() {
+        for (int i = 0; i < size; ++i) {
+            storage[i] = null;
+        }
+        
+        size = 0;
+        map.clear();
     }
 
     /**
