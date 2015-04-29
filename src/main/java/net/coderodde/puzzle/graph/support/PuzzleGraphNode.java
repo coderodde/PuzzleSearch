@@ -73,6 +73,29 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
         this.emptyIndex = copy.emptyIndex;
     }
     
+    @Override
+    public boolean hasChild(final PuzzleGraphNode other) {
+        if (getDegree() != other.getDegree()) {
+            return false;
+        }
+        
+        int differences = 0;
+        
+        for (int y = 0; y < degree; ++y) {
+            for (int x = 0; x < degree; ++x) {
+                if (matrix[y][x] != other.matrix[y][x]) {
+                    ++differences;
+                    
+                    if (differences > 2) {
+                        return false;
+                    }
+                }
+            }
+        }
+        
+        return differences == 2;
+    }
+    
     public PuzzleGraphNode randomSwap(final Random rnd) {
         final PuzzleGraphNode newNode = new PuzzleGraphNode(this);
         
@@ -420,5 +443,4 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
                     "be at most " + MAXIMUM_DEGREE + ".");
         }
     }
-
 }

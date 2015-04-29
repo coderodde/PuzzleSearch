@@ -90,4 +90,9 @@ extends AbstractHeuristicFunction<PuzzleGraphNode> {
             yArray = new int[capacity];
         }
     }
+
+    @Override
+    public AbstractHeuristicFunction<PuzzleGraphNode> spawn() {
+        return new ManhattanHeuristicFunction();
+    }
 }

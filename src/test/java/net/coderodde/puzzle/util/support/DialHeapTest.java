@@ -5,15 +5,15 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DaryHeapTest {
+public class DialHeapTest {
     
-    private IntegerPriorityQueue<?, Integer> heap = null;
+    private IntegerPriorityQueue<?, Integer> heap = new DialHeap<>();
 
     @Before
     public void init() {
-        heap = new DaryHeap<>(3);
+        heap.clear();
     }
-
+    
     @Test
     public void testAdd() {
         for (int i = 100; i != 0; --i) {
@@ -49,14 +49,14 @@ public class DaryHeapTest {
     @Test
     public void testDecreasePriority() {
         for (int i = 0; i != 1000; ++i) {
-            heap.insert(i, i);
+            heap.insert(i, 1000);
         }
         
         for (int i = 0; i != 1000; ++i) {
-            heap.decreasePriority(i, -i);
+            heap.decreasePriority(i, i);
         }
         
-        for (int i = 999; i > -1; --i) {
+        for (int i = 0; i != 1000; ++i) {
             assertEquals((Integer) i, heap.extractMinimum());
         }
         
