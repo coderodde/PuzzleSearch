@@ -1,5 +1,6 @@
 package net.coderodde.puzzle.graph.finders.support;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +40,12 @@ extends AbstractPathFinder<T> {
     }
     @Override
     public List<T> search(final T source, final T target) {
+        if (source.equals(target)) {
+            final List<T> path = new ArrayList<>(1);
+            path.add(source);
+            return path;
+        }
+        
         //// State
         final IntegerPriorityQueue<?, T> OPENA = queue.spawn();
         final IntegerPriorityQueue<?, T> OPENB = queue.spawn();

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 import net.coderodde.puzzle.graph.support.PuzzleGraphNode;
 import net.coderodde.puzzle.graph.finders.AbstractPathFinder;
+import net.coderodde.puzzle.graph.finders.support.BFSFinder;
 import net.coderodde.puzzle.graph.finders.support.BidirectionalBFSFinder;
 import net.coderodde.puzzle.graph.finders.support.BidirectionalHeuristicBFSFinder;
 import net.coderodde.puzzle.graph.finders.support.HeuristicBFSFinder;
@@ -18,14 +19,12 @@ public class App {
     public static void main(final String... args) {
         final long seed = System.currentTimeMillis();
         final Random rnd = new Random(seed);
-        final PuzzleGraphNode source = getSource(2, rnd);
+        final PuzzleGraphNode source = getSource(50, rnd);
         final PuzzleGraphNode target = new PuzzleGraphNode(source.getDegree());
-        
         System.out.println("Seed: " + seed);
         
-//        profile(new BidirectionalBFSFinder(), source, target,
-//                "" + BidirectionalBFSFinder.class.getSimpleName());
-        
+        profileBFSFinder(source, target);
+        profileBidirectionalBFSFinder(source, target);
         profileHeuristicBFSFinder(source, target);
         profileBidirectionalHeuristicBFSFinder(source, target);
     }
@@ -90,6 +89,28 @@ public class App {
                                          s + " with 4-ary heap");
     }
     
+    public static void profileBFSFinder(
+            final PuzzleGraphNode source,
+            final PuzzleGraphNode target) {
+        final String s = BFSFinder.class.getSimpleName();
+        
+        profile(new BFSFinder(), 
+                                         source, 
+                                         target, 
+                                         s);
+    }
+    
+    public static void profileBidirectionalBFSFinder(
+            final PuzzleGraphNode source,
+            final PuzzleGraphNode target) {
+        final String s = BidirectionalBFSFinder.class.getSimpleName();
+        
+        profile(new BidirectionalBFSFinder(), 
+                                         source, 
+                                         target, 
+                                         s);
+    }
+    
     public static void profile(
             final AbstractPathFinder<PuzzleGraphNode> finder,
             final PuzzleGraphNode source,
@@ -115,8 +136,24 @@ public class App {
         steps += steps % 2;
         
         while (steps > 0) {
-            node = node.randomSwap(rnd);
-            --steps;
+            PuzzleGraphNode tmp;
+//            node = node.randomSwap(rnd);
+            double d = rnd.nextDouble();
+            
+            if (d < 0.25) {
+                tmp = node.moveDown();
+            } else if (d < 0.5) {
+                tmp = node.moveLeft();
+            } else if (d < 0.75) {
+                tmp = node.moveRight();
+            } else {
+                tmp = node.moveUp();
+            }
+            
+            if (tmp != null) {
+                --steps;
+                node = tmp;
+            }
         }
         
         return node;

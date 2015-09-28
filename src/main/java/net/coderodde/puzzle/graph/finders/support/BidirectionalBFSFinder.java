@@ -1,6 +1,7 @@
 package net.coderodde.puzzle.graph.finders.support;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,12 +13,19 @@ import net.coderodde.puzzle.graph.finders.AbstractPathFinder;
  *
  * @author Rodion Efremov
  * @version 1.6
+ * @param <T> the actual graph node implementation type.
  */
 public class BidirectionalBFSFinder<T extends AbstractGraphNode<T>>
 extends AbstractPathFinder<T> {
 
     @Override
     public List<T> search(final T source, final T target) {
+        if (source.equals(target)) {
+            List<T> path = new ArrayList<>(1);
+            path.add(target);
+            return path;
+        }
+                
         final Queue<T> queueA = new ArrayDeque<>();
         final Queue<T> queueB = new ArrayDeque<>();
         
