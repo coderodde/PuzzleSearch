@@ -19,7 +19,7 @@ public class App {
     public static void main(final String... args) {
         final long seed = System.currentTimeMillis();
         final Random rnd = new Random(seed);
-        final PuzzleGraphNode source = getSource(50, rnd);
+        final PuzzleGraphNode source = getSource(60, rnd);
         final PuzzleGraphNode target = new PuzzleGraphNode(source.getDegree());
         System.out.println("Seed: " + seed);
         
@@ -132,12 +132,12 @@ public class App {
     }
     
     public static PuzzleGraphNode getSource(int steps, final Random rnd) {
-        PuzzleGraphNode node = new PuzzleGraphNode(4);
+        PuzzleGraphNode node = new PuzzleGraphNode(3);
         steps += steps % 2;
         
         while (steps > 0) {
             PuzzleGraphNode tmp;
-//            node = node.randomSwap(rnd);
+            
             double d = rnd.nextDouble();
             
             if (d < 0.25) {
