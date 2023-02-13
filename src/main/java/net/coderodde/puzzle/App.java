@@ -27,104 +27,143 @@ public class App {
         
 //        profileBFSFinder(source, target);
 //        profileBidirectionalBFSFinder(source, target); // These take forever.
-        profileNBAFinder(source, target);
-        profileHeuristicBFSFinder(source, target);
-        profileBidirectionalHeuristicBFSFinder(source, target);
+        List<PuzzleGraphNode> path1 = profileNBAFinder(source, target);
+        List<PuzzleGraphNode> path2 = profileHeuristicBFSFinder(source, target);
+        List<PuzzleGraphNode> path3 = 
+                profileBidirectionalHeuristicBFSFinder(source, target);
+        
+        if (!pathsValid(path1, path2, path3)) {
+            throw new IllegalStateException("Paths do not agree on length.");
+        } else {
+            System.out.println("Paths are valid!");
+        }
     }
     
-    public static void profileHeuristicBFSFinder(final PuzzleGraphNode source,
-                                                 final PuzzleGraphNode target) {
+    public static List<PuzzleGraphNode> 
+        profileHeuristicBFSFinder(final PuzzleGraphNode source,
+                                  final PuzzleGraphNode target) {
+            
         final String s = HeuristicBFSFinder.class.getSimpleName();
         final ManhattanHeuristicFunction mhf = 
                 new ManhattanHeuristicFunction(source);
         
-        profile(new HeuristicBFSFinder<>(mhf, 
+        List<PuzzleGraphNode> path1 = 
+            profile(new HeuristicBFSFinder<>(mhf, 
                                          new DialHeap<PuzzleGraphNode>()), 
                                          source, 
                                          target, 
                                          s + " with Dial's heap");
-        
-        profile(new HeuristicBFSFinder<>(mhf,
+    
+        List<PuzzleGraphNode> path2 =         
+            profile(new HeuristicBFSFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(2)),
                                          source,
                                          target, 
                                          s + " with 2-ary heap");
         
-        profile(new HeuristicBFSFinder<>(mhf,
+        List<PuzzleGraphNode> path3 = 
+            profile(new HeuristicBFSFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(3)),
                                          source,
                                          target, 
                                          s + " with 3-ary heap");
         
-        profile(new HeuristicBFSFinder<>(mhf,
+        List<PuzzleGraphNode> path4 = 
+           profile(new HeuristicBFSFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(4)),
                                          source,
                                          target, 
                                          s + " with 4-ary heap");
+        
+        if (!pathsValid(path1, path2, path3, path4)) {
+            throw new IllegalStateException("Paths on NBAFinder disagreed.");
+        }
+        
+        return path1;
     }
     
-    public static void profileBidirectionalHeuristicBFSFinder(
+    public static List<PuzzleGraphNode> profileBidirectionalHeuristicBFSFinder(
             final PuzzleGraphNode source,
             final PuzzleGraphNode target) {
         final String s = BidirectionalHeuristicBFSFinder.class.getSimpleName();
         final ManhattanHeuristicFunction mhf = 
                 new ManhattanHeuristicFunction(source);
         
-        profile(new BidirectionalHeuristicBFSFinder<>(mhf, 
+        List<PuzzleGraphNode> path1 = 
+            profile(new BidirectionalHeuristicBFSFinder<>(mhf, 
                                          new DialHeap<PuzzleGraphNode>()), 
                                          source, 
                                          target, 
                                          s + " with Dial's heap");
         
-        profile(new BidirectionalHeuristicBFSFinder<>(mhf,
+        List<PuzzleGraphNode> path2 = 
+            profile(new BidirectionalHeuristicBFSFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(2)),
                                          source,
                                          target, 
                                          s + " with 2-ary heap");
         
-        profile(new BidirectionalHeuristicBFSFinder<>(mhf,
+        List<PuzzleGraphNode> path3 = 
+            profile(new BidirectionalHeuristicBFSFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(3)),
                                          source,
                                          target, 
                                          s + " with 3-ary heap");
         
-        profile(new BidirectionalHeuristicBFSFinder<>(mhf,
+        List<PuzzleGraphNode> path4 = 
+            profile(new BidirectionalHeuristicBFSFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(4)),
                                          source,
                                          target, 
                                          s + " with 4-ary heap");
+        
+        if (!pathsValid(path1, path2, path3, path4)) {
+            throw new IllegalStateException("Paths on NBAFinder disagreed.");
+        }
+        
+        return path1;
     }
     
-    public static void profileNBAFinder(
+    public static List<PuzzleGraphNode> profileNBAFinder(
             final PuzzleGraphNode source,
             final PuzzleGraphNode target) {
         final String s = NBAFinder.class.getSimpleName();
         final ManhattanHeuristicFunction mhf = 
                 new ManhattanHeuristicFunction(source);
         
-        profile(new NBAFinder<>(mhf, 
+        List<PuzzleGraphNode> path1 = 
+                profile(new NBAFinder<>(mhf, 
                                          new DialHeap<PuzzleGraphNode>()), 
                                          source, 
                                          target, 
                                          s + " with Dial's heap");
         
-        profile(new NBAFinder<>(mhf,
+        List<PuzzleGraphNode> path2 = 
+                profile(new NBAFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(2)),
                                          source,
                                          target, 
                                          s + " with 2-ary heap");
         
-        profile(new NBAFinder<>(mhf,
+        List<PuzzleGraphNode> path3 = 
+                profile(new NBAFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(3)),
                                          source,
                                          target, 
                                          s + " with 3-ary heap");
         
-        profile(new NBAFinder<>(mhf,
+        List<PuzzleGraphNode> path4 = 
+                profile(new NBAFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(4)),
                                          source,
                                          target, 
                                          s + " with 4-ary heap");
+        
+        if (!pathsValid(path1, path2, path3, path4)) {
+            throw new IllegalStateException("Paths on NBAFinder disagreed.");
+        }
+        
+        return path1;
     }
     
     public static void profileBFSFinder(
@@ -149,7 +188,7 @@ public class App {
                                          s);
     }
     
-    public static void profile(
+    public static List<PuzzleGraphNode> profile(
             final AbstractPathFinder<PuzzleGraphNode> finder,
             final PuzzleGraphNode source,
             final PuzzleGraphNode target,
@@ -167,6 +206,8 @@ public class App {
             System.out.println("Invalid path!");
             System.exit(-1);
         }
+        
+        return path;
     }
     
     public static PuzzleGraphNode getSource(int steps,
@@ -224,6 +265,24 @@ public class App {
         }
         
         System.out.println(sb.toString());
+    }
+    
+    public static <T> boolean pathsValid(final List<T>... paths) {
+        for (int i = 0; i < paths.length - 1; ++i) {
+            if (paths[i].size() != paths[i + 1].size()) {
+                return false;
+            }
+        }
+        
+        int pathLength = paths[0].size();
+        
+        for (int i = 1; i < paths.length; i++) {
+            if (paths[i].size() != pathLength) {
+                return false;
+            }
+        }
+        
+        return true;
     }
     
     public static <T> boolean listsEqual(final List<T>... lists) {
