@@ -16,8 +16,8 @@ import net.coderodde.puzzle.util.support.DialHeap;
 public class App {
     
     private static final int SCREEN_WIDTH = 80;
-    private static final int DEGREE = 50;
-    private static final int STEPS = 200;
+    private static final int DEGREE = 70;
+    private static final int STEPS = 100;
     
     public static void main(final String... args) {
         final long seed = System.currentTimeMillis();
@@ -29,12 +29,19 @@ public class App {
                 new PuzzleGraphNode(source.getDegree());
         System.out.println("Seed: " + seed);
         
+        // Warm up:
+        System.out.println("Warming up...");
+        profileNBAFinder(source, target, false);
+        profileHeuristicBFSFinder(source, target, false);
+        profileBidirectionalHeuristicBFSFinder(source, target, false);
+        System.out.println("Warming up done!");
+        
 //        profileBFSFinder(source, target);
 //        profileBidirectionalBFSFinder(source, target); // These take forever.
-        List<PuzzleGraphNode> path1 = profileNBAFinder(source, target);
-        List<PuzzleGraphNode> path2 = profileHeuristicBFSFinder(source, target);
+        List<PuzzleGraphNode> path1 = profileNBAFinder(source, target, true);
+        List<PuzzleGraphNode> path2 = profileHeuristicBFSFinder(source, target, true);
         List<PuzzleGraphNode> path3 = 
-                profileBidirectionalHeuristicBFSFinder(source, target);
+                profileBidirectionalHeuristicBFSFinder(source, target, true);
         
         if (!pathsValid(path1, path2, path3)) {
             throw new IllegalStateException("Paths do not agree on length.");
@@ -45,7 +52,8 @@ public class App {
     
     public static List<PuzzleGraphNode> 
         profileHeuristicBFSFinder(final PuzzleGraphNode source,
-                                  final PuzzleGraphNode target) {
+                                  final PuzzleGraphNode target,
+                                  final boolean doPrint) {
             
         final String s = HeuristicBFSFinder.class.getSimpleName();
         final ManhattanHeuristicFunction mhf = 
@@ -56,28 +64,32 @@ public class App {
                                          new DialHeap<PuzzleGraphNode>()), 
                                          source, 
                                          target, 
-                                         s + " with Dial's heap");
+                                         s + " with Dial's heap",
+                                         doPrint);
     
         List<PuzzleGraphNode> path2 =         
             profile(new HeuristicBFSFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(2)),
                                          source,
                                          target, 
-                                         s + " with 2-ary heap");
+                                         s + " with 2-ary heap",
+                                         doPrint);
         
         List<PuzzleGraphNode> path3 = 
             profile(new HeuristicBFSFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(3)),
                                          source,
                                          target, 
-                                         s + " with 3-ary heap");
+                                         s + " with 3-ary heap",
+                                         doPrint);
         
         List<PuzzleGraphNode> path4 = 
            profile(new HeuristicBFSFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(4)),
                                          source,
                                          target, 
-                                         s + " with 4-ary heap");
+                                         s + " with 4-ary heap",
+                                         doPrint);
         
         if (!pathsValid(path1, path2, path3, path4)) {
             throw new IllegalStateException("Paths on NBAFinder disagreed.");
@@ -88,7 +100,9 @@ public class App {
     
     public static List<PuzzleGraphNode> profileBidirectionalHeuristicBFSFinder(
             final PuzzleGraphNode source,
-            final PuzzleGraphNode target) {
+            final PuzzleGraphNode target,
+            final boolean doPrint) {
+        
         final String s = BidirectionalHeuristicBFSFinder.class.getSimpleName();
         final ManhattanHeuristicFunction mhf = 
                 new ManhattanHeuristicFunction(source);
@@ -98,28 +112,32 @@ public class App {
                                          new DialHeap<PuzzleGraphNode>()), 
                                          source, 
                                          target, 
-                                         s + " with Dial's heap");
+                                         s + " with Dial's heap",
+                                         doPrint);
         
         List<PuzzleGraphNode> path2 = 
             profile(new BidirectionalHeuristicBFSFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(2)),
                                          source,
                                          target, 
-                                         s + " with 2-ary heap");
+                                         s + " with 2-ary heap",
+                                         doPrint);
         
         List<PuzzleGraphNode> path3 = 
             profile(new BidirectionalHeuristicBFSFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(3)),
                                          source,
                                          target, 
-                                         s + " with 3-ary heap");
+                                         s + " with 3-ary heap",
+                                         doPrint);
         
         List<PuzzleGraphNode> path4 = 
             profile(new BidirectionalHeuristicBFSFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(4)),
                                          source,
                                          target, 
-                                         s + " with 4-ary heap");
+                                         s + " with 4-ary heap",
+                                         doPrint);
         
         if (!pathsValid(path1, path2, path3, path4)) {
             throw new IllegalStateException("Paths on NBAFinder disagreed.");
@@ -130,7 +148,8 @@ public class App {
     
     public static List<PuzzleGraphNode> profileNBAFinder(
             final PuzzleGraphNode source,
-            final PuzzleGraphNode target) {
+            final PuzzleGraphNode target,
+            final boolean doPrint) {
         final String s = NBAFinder.class.getSimpleName();
         final ManhattanHeuristicFunction mhf = 
                 new ManhattanHeuristicFunction(source);
@@ -140,28 +159,32 @@ public class App {
                                          new DialHeap<PuzzleGraphNode>()), 
                                          source, 
                                          target, 
-                                         s + " with Dial's heap");
+                                         s + " with Dial's heap",
+                                         doPrint);
         
         List<PuzzleGraphNode> path2 = 
                 profile(new NBAFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(2)),
                                          source,
                                          target, 
-                                         s + " with 2-ary heap");
+                                         s + " with 2-ary heap",
+                                         doPrint);
         
         List<PuzzleGraphNode> path3 = 
                 profile(new NBAFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(3)),
                                          source,
                                          target, 
-                                         s + " with 3-ary heap");
+                                         s + " with 3-ary heap",
+                                         doPrint);
         
         List<PuzzleGraphNode> path4 = 
                 profile(new NBAFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(4)),
                                          source,
                                          target, 
-                                         s + " with 4-ary heap");
+                                         s + " with 4-ary heap",
+                                         doPrint);
         
         if (!pathsValid(path1, path2, path3, path4)) {
             throw new IllegalStateException("Paths on NBAFinder disagreed.");
@@ -176,9 +199,10 @@ public class App {
         final String s = BFSFinder.class.getSimpleName();
         
         profile(new BFSFinder(), 
-                                         source, 
-                                         target, 
-                                         s);
+                source, 
+                target, 
+                s,
+                false);
     }
     
     public static void profileBidirectionalBFSFinder(
@@ -186,25 +210,31 @@ public class App {
             final PuzzleGraphNode target) {
         final String s = BidirectionalBFSFinder.class.getSimpleName();
         
-        profile(new BidirectionalBFSFinder(), 
-                                         source, 
-                                         target, 
-                                         s);
+        profile(new BidirectionalBFSFinder(),
+                source, 
+                target, 
+                s,
+                false);
     }
     
     public static List<PuzzleGraphNode> profile(
             final AbstractPathFinder<PuzzleGraphNode> finder,
             final PuzzleGraphNode source,
             final PuzzleGraphNode target,
-            final String title) {
-        title(title);
+            final String title,
+            final boolean doPrint) {
+        if (doPrint) {
+            title(title);
+        }
         
         final long ta = System.currentTimeMillis();
         final List<PuzzleGraphNode> path = finder.search(source, target);
         final long tb = System.currentTimeMillis();
         
-        System.out.println("Time: " + (tb - ta) + " ms. Path length: " +
-                           path.size());
+        if (doPrint) {
+            System.out.println("Time: " + (tb - ta) + " ms. Path length: " +
+                               path.size());
+        }
         
         if (!source.isValidPath(source, target, path)) {
             System.out.println("Invalid path!");

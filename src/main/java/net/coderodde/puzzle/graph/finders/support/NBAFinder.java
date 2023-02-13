@@ -64,7 +64,7 @@ extends AbstractPathFinder<T> {
         heuristicFunction.setTarget(target);
         heuristicFunctionRev.setTarget(source);
         
-        int totalDistance = heuristicFunction.estimate(target);
+        int totalDistance = heuristicFunction.estimate(source);
         this.fA = totalDistance;
         this.fB = totalDistance;
         this.bestPathLength = Integer.MAX_VALUE;
@@ -82,25 +82,7 @@ extends AbstractPathFinder<T> {
         DISTANCEA.put(source, 0);
         DISTANCEB.put(target, 0);
         
-        while (!OPENA.isEmpty() && !OPENB.isEmpty()) {
-            final T minA = OPENA.min();
-            final T minB = OPENB.min();
-            
-            if (touchNode != null) {
-                final int fScoreA = DISTANCEA.get(minA)
-                                  + heuristicFunction.estimate(minA);
-                
-                final int fScoreB = DISTANCEB.get(minB)
-                                  + heuristicFunctionRev.estimate(minB);
-                
-                if (Math.max(fScoreA, fScoreB) >= bestPathLength) {
-                    return tracebackPath(
-                            touchNode, 
-                            PARENTSA, 
-                            PARENTSB);
-                }
-            }
-            
+        while (!OPENA.isEmpty() && !OPENB.isEmpty()) {            
             if (OPENA.size() < OPENB.size()) {
                 expandInForwardDirection(
                         OPENA,
@@ -120,6 +102,13 @@ extends AbstractPathFinder<T> {
                         heuristicFunction, 
                         heuristicFunctionRev);
             }
+        }
+        
+        if (touchNode != null) {
+            return tracebackPath(
+                    touchNode,
+                    PARENTSA,
+                    PARENTSB);
         }
         
         return null;
