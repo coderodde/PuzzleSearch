@@ -15,17 +15,27 @@ extends AbstractHeuristicFunction<PuzzleGraphNode> {
     /**
      * Implements a simple map from a cell number to its x-coordinate.
      */
-    private int[] xArray = new int[0];
+    private final int[] xArray;
     
     /**
      * Implements a simple map from a cell number to its y-coordinate.
      */
-    private int[] yArray = new int[0];
+    private final int[] yArray;
+    
+    private final PuzzleGraphNode source;
     
     /**
      * Caches the target node.
      */
     private PuzzleGraphNode target;
+    
+    public ManhattanHeuristicFunction(
+            PuzzleGraphNode sourceNode) {
+        final int degree = sourceNode.getDegree();
+        this.source = sourceNode;
+        this.xArray = new int[degree * degree];
+        this.yArray = new int[degree * degree];
+    }
     
     /**
      * {@inheritDoc }
@@ -37,14 +47,16 @@ extends AbstractHeuristicFunction<PuzzleGraphNode> {
     @Override
     public int estimate(final PuzzleGraphNode source) {
         final int degree = source.getDegree();
-        
-        ensureCapacity(degree * degree);
-        
         int distance = 0;
         
         for (int y = 0; y < degree; ++y) {
             for (int x = 0; x < degree; ++x) {
-                final byte currentCell = source.get(x, y);
+                final int currentCell = source.get(x, y);
+                
+                if (currentCell < 0) {
+                    break;
+                }
+                
                 xArray[currentCell] = x;
                 yArray[currentCell] = y;
             }
@@ -52,7 +64,7 @@ extends AbstractHeuristicFunction<PuzzleGraphNode> {
         
         for (int y = 0; y < degree; ++y) {
             for (int x = 0; x < degree; ++x) {
-                final byte currentCell = target.get(x, y);
+                final int currentCell = target.get(x, y);
                 
                 distance += Math.abs(x - xArray[currentCell]) +
                             Math.abs(y - yArray[currentCell]);
@@ -78,21 +90,8 @@ extends AbstractHeuristicFunction<PuzzleGraphNode> {
         this.target = target;
     }
     
-    /**
-     * Ensures that the coordinate arrays can accommodate <code>capacity</code>
-     * amount of entries.
-     * 
-     * @param capacity the requested capacity.
-     */
-    private void ensureCapacity(final int capacity) {
-        if (xArray.length < capacity) {
-            xArray = new int[capacity];
-            yArray = new int[capacity];
-        }
-    }
-
     @Override
     public AbstractHeuristicFunction<PuzzleGraphNode> spawn() {
-        return new ManhattanHeuristicFunction();
+        return new ManhattanHeuristicFunction(source);
     }
 }

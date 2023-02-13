@@ -44,6 +44,13 @@ extends Spawnable<T> {
     public E min();
     
     /**
+     * Returns the priority of the minimum element.
+     * 
+     * @return the minimum priority over this heap. 
+     */
+    public int minPriority();
+    
+    /**
      * Returns <code>true</code> if and only if this heap is empty.
      * 
      * @return <code>true</code> if the heap is empty.

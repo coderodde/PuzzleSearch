@@ -193,6 +193,13 @@ public class DaryHeap<E> implements IntegerPriorityQueue<DaryHeap<E>, E> {
         return ((Node<E>) storage[0]).element;
     }
 
+    @Override
+    public int minPriority() {
+        checkNotEmpty();
+        
+        return ((Node<E>) storage[0]).priority;
+    }
+    
     /**
      * {@inheritDoc }
      * 

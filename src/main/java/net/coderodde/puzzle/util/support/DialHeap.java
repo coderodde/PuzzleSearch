@@ -193,6 +193,12 @@ public class DialHeap<E> implements IntegerPriorityQueue<DialHeap<E>, E> {
     }
 
     @Override
+    public int minPriority() {
+        checkNotEmpty();
+        return ((ListNode<E>) storage[minimumPriority]).priority;
+    }
+    
+    @Override
     public boolean isEmpty() {
         return size == 0;
     }

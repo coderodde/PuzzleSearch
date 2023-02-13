@@ -9,22 +9,25 @@ import net.coderodde.puzzle.graph.finders.support.BidirectionalBFSFinder;
 import net.coderodde.puzzle.graph.finders.support.BidirectionalHeuristicBFSFinder;
 import net.coderodde.puzzle.graph.finders.support.HeuristicBFSFinder;
 import net.coderodde.puzzle.graph.finders.support.ManhattanHeuristicFunction;
+import net.coderodde.puzzle.graph.finders.support.NBAFinder;
 import net.coderodde.puzzle.util.support.DaryHeap;
 import net.coderodde.puzzle.util.support.DialHeap;
 
 public class App {
     
     private static final int SCREEN_WIDTH = 80;
+    private static final int DEGREE = 100;
     
     public static void main(final String... args) {
         final long seed = System.currentTimeMillis();
         final Random rnd = new Random(seed);
-        final PuzzleGraphNode source = getSource(60, rnd);
+        final PuzzleGraphNode source = getSource(100, DEGREE, rnd);
         final PuzzleGraphNode target = new PuzzleGraphNode(source.getDegree());
         System.out.println("Seed: " + seed);
         
-        profileBFSFinder(source, target);
-        profileBidirectionalBFSFinder(source, target);
+//        profileBFSFinder(source, target);
+//        profileBidirectionalBFSFinder(source, target); // These take forever.
+        profileNBAFinder(source, target);
         profileHeuristicBFSFinder(source, target);
         profileBidirectionalHeuristicBFSFinder(source, target);
     }
@@ -32,7 +35,9 @@ public class App {
     public static void profileHeuristicBFSFinder(final PuzzleGraphNode source,
                                                  final PuzzleGraphNode target) {
         final String s = HeuristicBFSFinder.class.getSimpleName();
-        final ManhattanHeuristicFunction mhf = new ManhattanHeuristicFunction();
+        final ManhattanHeuristicFunction mhf = 
+                new ManhattanHeuristicFunction(source);
+        
         profile(new HeuristicBFSFinder<>(mhf, 
                                          new DialHeap<PuzzleGraphNode>()), 
                                          source, 
@@ -62,7 +67,8 @@ public class App {
             final PuzzleGraphNode source,
             final PuzzleGraphNode target) {
         final String s = BidirectionalHeuristicBFSFinder.class.getSimpleName();
-        final ManhattanHeuristicFunction mhf = new ManhattanHeuristicFunction();
+        final ManhattanHeuristicFunction mhf = 
+                new ManhattanHeuristicFunction(source);
         
         profile(new BidirectionalHeuristicBFSFinder<>(mhf, 
                                          new DialHeap<PuzzleGraphNode>()), 
@@ -83,6 +89,38 @@ public class App {
                                          s + " with 3-ary heap");
         
         profile(new BidirectionalHeuristicBFSFinder<>(mhf,
+                                         new DaryHeap<PuzzleGraphNode>(4)),
+                                         source,
+                                         target, 
+                                         s + " with 4-ary heap");
+    }
+    
+    public static void profileNBAFinder(
+            final PuzzleGraphNode source,
+            final PuzzleGraphNode target) {
+        final String s = NBAFinder.class.getSimpleName();
+        final ManhattanHeuristicFunction mhf = 
+                new ManhattanHeuristicFunction(source);
+        
+        profile(new NBAFinder<>(mhf, 
+                                         new DialHeap<PuzzleGraphNode>()), 
+                                         source, 
+                                         target, 
+                                         s + " with Dial's heap");
+        
+        profile(new NBAFinder<>(mhf,
+                                         new DaryHeap<PuzzleGraphNode>(2)),
+                                         source,
+                                         target, 
+                                         s + " with 2-ary heap");
+        
+        profile(new NBAFinder<>(mhf,
+                                         new DaryHeap<PuzzleGraphNode>(3)),
+                                         source,
+                                         target, 
+                                         s + " with 3-ary heap");
+        
+        profile(new NBAFinder<>(mhf,
                                          new DaryHeap<PuzzleGraphNode>(4)),
                                          source,
                                          target, 
@@ -131,8 +169,10 @@ public class App {
         }
     }
     
-    public static PuzzleGraphNode getSource(int steps, final Random rnd) {
-        PuzzleGraphNode node = new PuzzleGraphNode(3);
+    public static PuzzleGraphNode getSource(int steps,
+                                            int degree, 
+                                            final Random rnd) {
+        PuzzleGraphNode node = new PuzzleGraphNode(degree);
         steps += steps % 2;
         
         while (steps > 0) {

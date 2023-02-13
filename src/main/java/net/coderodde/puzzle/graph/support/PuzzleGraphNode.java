@@ -15,7 +15,6 @@ import net.coderodde.puzzle.graph.AbstractGraphNode;
 public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
    
     private static final int MINIMUM_DEGREE = 3;
-    private static final int MAXIMUM_DEGREE = 11;
     
     /**
      * This field stores the dimension of the puzzle node being represented.
@@ -25,12 +24,17 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
     /**
      * This matrix stores the actual puzzle node cells.
      */
-    private final byte[][] matrix;
+    private final int[][] matrix;
     
     /**
-     * Compactly store the coordinates of empty cell.
+     * The X-index of the empty slot.
      */
-    private byte emptyIndex;
+    private int emptyIndexX;
+    
+    /**
+     * The Y-index of the empty slot.
+     */
+    private int emptyIndexY;
     
     /**
      * Creates the goal state of the puzzle graph.
@@ -40,9 +44,9 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
     public PuzzleGraphNode(final int degree) {
         checkDegree(degree);
         this.degree = degree;
-        this.matrix = new byte[degree][degree];
+        this.matrix = new int[degree][degree];
         
-        byte b = 1;
+        int b = 1;
         
         for (int y = 0; y < degree; ++y) {
             for (int x = 0; x < degree; ++x) {
@@ -51,8 +55,8 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
         }
         
         matrix[degree - 1][degree - 1] = 0;
-        emptyIndex = (byte)((byte)(degree - 1) | 
-                     (byte)(degree - 1) << 4);
+        emptyIndexX = degree - 1;
+        emptyIndexY = degree - 1;
     }
     
     /**
@@ -62,7 +66,7 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
      */
     private PuzzleGraphNode(final PuzzleGraphNode copy) {
         this.degree = copy.degree;
-        this.matrix = new byte[degree][degree];
+        this.matrix = new int[degree][degree];
         
         for (int y = 0; y < degree; ++y) {
             for (int x = 0; x < degree; ++x) {
@@ -70,7 +74,8 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
             }
         }
         
-        this.emptyIndex = copy.emptyIndex;
+        this.emptyIndexX = copy.emptyIndexX;
+        this.emptyIndexY = copy.emptyIndexY;
     }
     
     @Override
@@ -145,7 +150,7 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
                 continue;
             }
             
-            byte tmp = newNode.matrix[sourceY][sourceX];
+            int tmp = newNode.matrix[sourceY][sourceX];
             newNode.matrix[sourceY][sourceX] = newNode.matrix[targetY][targetX];
             newNode.matrix[targetY][targetX] = tmp;
             return newNode;
@@ -168,7 +173,7 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
      * @param  y the y-coordinate of the cell to read.
      * @return the contents of the specified cell.
      */
-    public byte get(final int x, final int y) {
+    public int get(final int x, final int y) {
         return matrix[y][x];
     }
     
@@ -191,8 +196,8 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
         
         node.matrix[y][x] = node.matrix[y - 1][x];
         node.matrix[y - 1][x] = 0;
-        node.emptyIndex = createIndex(x, y - 1);
-        
+        node.emptyIndexX = x;
+        node.emptyIndexY = y - 1;
         return node;
     }
     
@@ -216,8 +221,8 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
         
         node.matrix[y][x] = node.matrix[y][x + 1];
         node.matrix[y][x + 1] = 0;
-        node.emptyIndex = createIndex(x + 1, y);
-        
+        node.emptyIndexX = x + 1;
+        node.emptyIndexY = y;
         return node;
     }
     
@@ -241,8 +246,8 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
         
         node.matrix[y][x] = node.matrix[y + 1][x];
         node.matrix[y + 1][x] = 0;
-        node.emptyIndex = createIndex(x, y + 1);
-        
+        node.emptyIndexX = x;
+        node.emptyIndexY = y + 1;
         return node;
     }
     
@@ -266,8 +271,8 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
         
         node.matrix[y][x] = node.matrix[y][x - 1];
         node.matrix[y][x - 1] = 0;
-        node.emptyIndex = createIndex(x - 1, y);
-        
+        node.emptyIndexX = x - 1;
+        node.emptyIndexY = y;
         return node;
     }
     
@@ -343,8 +348,8 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
         int hash = 0;
         int factor = 1;
         
-        for (final byte[] row : matrix) {
-            for (byte b : row) {
+        for (final int[] row : matrix) {
+            for (int b : row) {
                 hash += b * factor++;
             }
         }
@@ -400,7 +405,7 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
      * @return the x-coordinate.
      */
     public final int getEmptySlotX() {
-        return emptyIndex & 0xf;
+        return emptyIndexX;
     }
     
     /**
@@ -409,18 +414,7 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
      * @return the y-coordinate. 
      */
     public final int getEmptySlotY() {
-        return (emptyIndex & 0xf0) >>> 4;
-    }
-    
-    /**
-     * Encodes the coordinates of an empty cell.
-     * 
-     * @param  x the x-coordinate.
-     * @param  y the y-coordinate.
-     * @return the encoding of the coordinates.
-     */
-    private final byte createIndex(final int x, final int y) {
-        return (byte)((y << 4) | x);
+        return emptyIndexY;
     }
     
     /**
@@ -435,12 +429,6 @@ public class PuzzleGraphNode extends AbstractGraphNode<PuzzleGraphNode> {
             throw new IllegalArgumentException(
                     "The input degree is too small: " + degree + " but must " +
                     "be at least " + MINIMUM_DEGREE + ".");
-        }
-        
-        if (degree > MAXIMUM_DEGREE) {
-            throw new IllegalArgumentException(
-                    "The input degree is too large: " + degree + " but must " +
-                    "be at most " + MAXIMUM_DEGREE + ".");
         }
     }
 }
