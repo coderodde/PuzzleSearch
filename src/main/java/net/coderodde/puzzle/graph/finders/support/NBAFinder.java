@@ -27,7 +27,7 @@ extends AbstractPathFinder<T> {
     private final IntegerPriorityQueue<?, T> queue;
     private int fA;
     private int fB;
-    private int bestPathLength;
+    private int bestPathLength = Integer.MAX_VALUE;
     private T touchNode;
     
     public NBAFinder(final AbstractHeuristicFunction<T> heuristicFunction,
@@ -64,7 +64,6 @@ extends AbstractPathFinder<T> {
         heuristicFunction.setTarget(target);
         heuristicFunctionRev.setTarget(source);
         
-        int bestCost = Integer.MAX_VALUE;
         int totalDistance = heuristicFunction.estimate(target);
         this.fA = totalDistance;
         this.fB = totalDistance;
@@ -239,7 +238,7 @@ extends AbstractPathFinder<T> {
         }
         
         if (!OPENB.isEmpty()) {
-            fA = OPENB.minPriority();
+            fB = OPENB.minPriority();
         }
     }
 }
