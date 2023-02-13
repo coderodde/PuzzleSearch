@@ -16,13 +16,17 @@ import net.coderodde.puzzle.util.support.DialHeap;
 public class App {
     
     private static final int SCREEN_WIDTH = 80;
-    private static final int DEGREE = 100;
+    private static final int DEGREE = 50;
+    private static final int STEPS = 200;
     
     public static void main(final String... args) {
         final long seed = System.currentTimeMillis();
         final Random rnd = new Random(seed);
-        final PuzzleGraphNode source = getSource(100, DEGREE, rnd);
-        final PuzzleGraphNode target = new PuzzleGraphNode(source.getDegree());
+        final PuzzleGraphNode source = 
+                getSource(STEPS, DEGREE, rnd);
+        
+        final PuzzleGraphNode target = 
+                new PuzzleGraphNode(source.getDegree());
         System.out.println("Seed: " + seed);
         
 //        profileBFSFinder(source, target);

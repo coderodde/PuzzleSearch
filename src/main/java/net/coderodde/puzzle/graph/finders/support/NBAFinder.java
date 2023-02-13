@@ -83,6 +83,24 @@ extends AbstractPathFinder<T> {
         DISTANCEB.put(target, 0);
         
         while (!OPENA.isEmpty() && !OPENB.isEmpty()) {
+            final T minA = OPENA.min();
+            final T minB = OPENB.min();
+            
+            if (touchNode != null) {
+                final int fScoreA = DISTANCEA.get(minA)
+                                  + heuristicFunction.estimate(minA);
+                
+                final int fScoreB = DISTANCEB.get(minB)
+                                  + heuristicFunctionRev.estimate(minB);
+                
+                if (Math.max(fScoreA, fScoreB) >= bestPathLength) {
+                    return tracebackPath(
+                            touchNode, 
+                            PARENTSA, 
+                            PARENTSB);
+                }
+            }
+            
             if (OPENA.size() < OPENB.size()) {
                 expandInForwardDirection(
                         OPENA,
@@ -104,14 +122,7 @@ extends AbstractPathFinder<T> {
             }
         }
         
-        if (touchNode == null) {
-            // Target unreachable from source.
-            return null;
-        }
-        
-        return tracebackPath(touchNode,
-                         PARENTSA,
-                         PARENTSB);
+        return null;
     }
     
     private void expandInForwardDirection(
